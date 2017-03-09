@@ -46,7 +46,7 @@ public class SimpleApiAdapter implements Api {
 
 
     /**
-     * One of "https" "ssl" or "http"
+     * One of "https" or "http"
      * @param scheme the url scheme
      */
     public SimpleApiAdapter(String scheme) {
