@@ -4,9 +4,11 @@
     <groupId>com.bcgdv</groupId>
     <artifactId>play-apiclient</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>1.0-SNAPSHOT</version>
     <name>play-apiclient</name>
-    <description>A unified play framework client for JSON based micro-service APIs that are deployed under the same domain.</description>
+    <description>A unified play framework client for JSON based micro-service APIs that are deployed under the same
+        domain.
+    </description>
     <build>
         <plugins>
             <plugin>
@@ -123,7 +125,7 @@
             <name>Simon Mittag</name>
             <email>simon.mittag@bcgdv.com</email>
         </developer>
-        
+
         <developer>
             <name>Mohan Ambalavanan</name>
             <email>mohan.ambalavanan@gmail.com</email>

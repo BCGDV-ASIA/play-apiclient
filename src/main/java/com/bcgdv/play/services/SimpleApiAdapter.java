@@ -1,6 +1,7 @@
 package com.bcgdv.play.services;
 
-import com.bcgdv.play.Constants;
+import com.bcgdv.play.Params;
+import com.bcgdv.play.Scheme;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import play.Configuration;
@@ -15,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static com.bcgdv.RequestIdGenerator.X_REQUEST_ID;
-import static com.bcgdv.play.Constants.API_HOST_NAME;
+import static com.bcgdv.play.Params.API_HOST_NAME;
 
 /**
  * Simple API Adapter connects to internal APIs using the environment variable $API_HOST_NAME,
@@ -31,19 +32,15 @@ public class SimpleApiAdapter implements Api {
     protected static final String HTTP_CLIENT_TIMEOUT = "HTTP_CLIENT_TIMEOUT";
     protected static final long HTTP_CLIENT_TIMEOUT_DEFAULT_MS = 90000l;
 
-    protected static final String HTTPS = "https";
-    protected static final String SSL = "ssl";
-    protected static final String SCHEME_SEPARATOR = "://";
-    protected static final String HTTP = "http";
     protected static String scheme = "http://";
 
     /**
-     * Default to HTTP
+     * Default to "http"
      */
     public SimpleApiAdapter() {
-        String scheme = getEnvPropertyConfiguration(Constants.API_SCHEME);
+        String scheme = getEnvPropertyConfiguration(Params.API_SCHEME);
         if(scheme==null) {
-            initScheme(HTTP);
+            initScheme(Scheme.HTTP);
         } else {
             initScheme(scheme);
         }
@@ -64,10 +61,10 @@ public class SimpleApiAdapter implements Api {
      * @param scheme the scheme
      */
     protected void initScheme(String scheme) {
-        if(HTTPS.equalsIgnoreCase(scheme) || SSL.equalsIgnoreCase(scheme)) {
-            SimpleApiAdapter.scheme = HTTPS + SCHEME_SEPARATOR;
-        } else if(HTTP.equalsIgnoreCase(scheme)) {
-            SimpleApiAdapter.scheme = HTTP + SCHEME_SEPARATOR;
+        if(Scheme.HTTPS.equalsIgnoreCase(scheme) || Scheme.SSL.equalsIgnoreCase(scheme)) {
+            SimpleApiAdapter.scheme = Scheme.HTTPS + Scheme.SCHEME_SEPARATOR;
+        } else if(Scheme.HTTP.equalsIgnoreCase(scheme)) {
+            SimpleApiAdapter.scheme = Scheme.HTTP + Scheme.SCHEME_SEPARATOR;
         } else {
             throw new IllegalArgumentException("unable to recognise scheme");
         }
