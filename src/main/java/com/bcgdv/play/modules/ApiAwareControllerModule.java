@@ -3,11 +3,11 @@
  */
 package com.bcgdv.play.modules;
 
+import com.bcgdv.play.services.Api;
+import com.bcgdv.play.services.ApiFacade;
 import com.google.inject.AbstractModule;
 import play.Configuration;
 import play.Environment;
-import com.bcgdv.play.services.Api;
-import com.bcgdv.play.services.ApiFacade;
 
 /**
  * Module to bind api client classes at runtime
@@ -19,7 +19,8 @@ public class ApiAwareControllerModule extends AbstractModule {
 
     /**
      * Api module reads from env and configuration
-     * @param env the play environment
+     *
+     * @param env  the play environment
      * @param conf the play configuration
      */
     public ApiAwareControllerModule(Environment env, Configuration conf) {

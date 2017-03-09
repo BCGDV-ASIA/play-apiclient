@@ -23,6 +23,7 @@ public class ApiFacade implements Api {
 
     /**
      * HTTP GET api endpoint
+     *
      * @param uri the Uri
      * @return a JsonNode or Exception
      */
@@ -33,7 +34,8 @@ public class ApiFacade implements Api {
 
     /**
      * HTTP GET api endpoint
-     * @param uri the Uri
+     *
+     * @param uri      the Uri
      * @param headers, a Map of HTTP header value pairs
      * @return a JsonNode or Exception
      */
@@ -44,6 +46,7 @@ public class ApiFacade implements Api {
 
     /**
      * Delete the Uri
+     *
      * @param uri the Uri
      * @return parent node
      */
@@ -54,7 +57,8 @@ public class ApiFacade implements Api {
 
     /**
      * Delete the Uri
-     * @param uri the Uri
+     *
+     * @param uri     the Uri
      * @param headers a map of http headers
      * @return parent node
      */
@@ -65,6 +69,7 @@ public class ApiFacade implements Api {
 
     /**
      * HTTP POST api endpoint
+     *
      * @param uri the Uri
      * @return a JsonNode or Exception
      */
@@ -75,7 +80,8 @@ public class ApiFacade implements Api {
 
     /**
      * HTTP POST api endpiont
-     * @param uri the Uri
+     *
+     * @param uri      the Uri
      * @param headers, a Map of HTTP header key/value pairs
      * @return a JsonNode received from remote
      */
@@ -86,7 +92,8 @@ public class ApiFacade implements Api {
 
     /**
      * HTTP POST api endpoint
-     * @param uri the Uri
+     *
+     * @param uri   the Uri
      * @param body, a JsonNode body to be posted
      * @return a JsonNode received from remote
      */
@@ -97,9 +104,10 @@ public class ApiFacade implements Api {
 
     /**
      * HTTP POST api endpoint
-     * @param uri the Uri
+     *
+     * @param uri     the Uri
      * @param headers a Map of HTTP header value pairs
-     * @param body a JsonNode body to be posted
+     * @param body    a JsonNode body to be posted
      * @return a JsonNode received from remote
      */
     public JsonNode post(String uri, Map headers, JsonNode body) {
@@ -109,7 +117,8 @@ public class ApiFacade implements Api {
 
     /**
      * HTTP PUT api endpoint
-     * @param uri the Uri
+     *
+     * @param uri  the Uri
      * @param body a JsonNode body to be posted
      * @return a JsonNode received from remote
      */
@@ -120,9 +129,10 @@ public class ApiFacade implements Api {
 
     /**
      * HTTP POST api endpoint
-     * @param uri the Uri
+     *
+     * @param uri     the Uri
      * @param headers a Map of HTTP header value pairs
-     * @param body a JsonNode body to be posted
+     * @param body    a JsonNode body to be posted
      * @return a JsonNode received from remote
      */
     public JsonNode put(String uri, Map headers, JsonNode body) {
@@ -133,24 +143,26 @@ public class ApiFacade implements Api {
      * HTTP PUT api endpoint
      * Fire and forget pattern. Fires a put request for given uri, headers
      * and body asynchronously.
-     * @param uri the Uri
+     *
+     * @param uri  the Uri
      * @param body a JsonNode body to be posted
      */
     @Override
     public void putAndForget(String uri, JsonNode body) {
-         api.putAndForget(uri,body);
+        api.putAndForget(uri, body);
     }
 
     /**
      * HTTP PUT api endpoint
      * Fire and forget pattern. Fires a put request for given uri, headers
      * and body asynchronously.
-     * @param uri the Uri
+     *
+     * @param uri     the Uri
      * @param headers a Map of HTTP header value pairs
-     * @param body a JsonNode body to be posted
+     * @param body    a JsonNode body to be posted
      */
     @Override
     public void putAndForget(String uri, Map headers, JsonNode body) {
-         api.putAndForget(uri,headers,body);
+        api.putAndForget(uri, headers, body);
     }
 }

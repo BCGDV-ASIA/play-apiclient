@@ -25,6 +25,7 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * Create as a wrapper around Api
+     *
      * @param api the Api
      */
     public TimingWrapperInterceptor(Api api) {
@@ -33,6 +34,7 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * HTTP GET api endpoint
+     *
      * @param uri the Uri
      * @return a JsonNode or Exception
      */
@@ -44,7 +46,8 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * HTTP GET api endpoint
-     * @param uri the Uri
+     *
+     * @param uri      the Uri
      * @param headers, a Map of HTTP header value pairs
      * @return a JsonNode or Exception
      */
@@ -56,7 +59,8 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * HTTP POST api endpoint
-     * @param uri the Uri
+     *
+     * @param uri      the Uri
      * @param headers, a Map of HTTP header key/value pairs
      * @return a JsonNode or Exception
      */
@@ -68,6 +72,7 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * HTTP POST api endpiont
+     *
      * @param uri the Uri
      * @return a JsonNode received from remote
      */
@@ -79,7 +84,8 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * HTTP POST api endpiont
-     * @param uri the Uri
+     *
+     * @param uri  the Uri
      * @param body the body payload
      * @return a JsonNode received from remote
      */
@@ -91,9 +97,10 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * HTTP POST api endpiont
-     * @param uri the Uri
+     *
+     * @param uri     the Uri
      * @param headers a map of headers
-     * @param body the body payload
+     * @param body    the body payload
      * @return a JsonNode received from remote
      */
     public JsonNode post(String uri, Map headers, JsonNode body) {
@@ -104,7 +111,8 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * HTTP PUT api endpoint
-     * @param uri the Uri
+     *
+     * @param uri  the Uri
      * @param body a JsonNode body to be posted
      * @return a JsonNode received from remote
      */
@@ -116,9 +124,10 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * HTTP PUT api endpoint
-     * @param uri the Uri
+     *
+     * @param uri     the Uri
      * @param headers a map of headers
-     * @param body a JsonNode body to be posted
+     * @param body    a JsonNode body to be posted
      * @return a JsonNode received from remote
      */
     public JsonNode put(String uri, Map headers, JsonNode body) {
@@ -129,28 +138,31 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * Async, no need to time this.
-     * @param uri the Uri
+     *
+     * @param uri    the Uri
      * @param header the http header arguments as a map
-     * @param body a JsonNode body to be posted
+     * @param body   a JsonNode body to be posted
      */
     @Override
     public void putAndForget(String uri, Map header, JsonNode body) {
-        api.putAndForget(uri,header,body);
+        api.putAndForget(uri, header, body);
     }
 
     /**
      * Async, no need to time this.
-     * @param uri the Uri
+     *
+     * @param uri  the Uri
      * @param body a JsonNode body to be posted
      */
     @Override
     public void putAndForget(String uri, JsonNode body) {
-        api.putAndForget(uri,body);
+        api.putAndForget(uri, body);
     }
 
 
     /**
      * Delete the Uri
+     *
      * @param uri the Uri
      * @return parent node
      */
@@ -162,7 +174,8 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * Delete the Uri
-     * @param uri the Uri
+     *
+     * @param uri     the Uri
      * @param headers a Map of headers.
      * @return parent node
      */
@@ -174,18 +187,20 @@ public class TimingWrapperInterceptor implements Api {
 
     /**
      * Time this execution and return
-     * @param uri the uri
+     *
+     * @param uri    the uri
      * @param before the starting time
      * @param result the payload result
      * @return the result
      */
     protected JsonNode logAndReturn(String uri, long before, JsonNode result) {
-        Logger.info(String.format(ROUND_TRIP, uri, now()-before));
+        Logger.info(String.format(ROUND_TRIP, uri, now() - before));
         return result;
     }
 
     /**
      * Get the current time
+     *
      * @return as long millis
      */
     protected long now() {

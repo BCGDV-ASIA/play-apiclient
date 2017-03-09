@@ -30,4 +30,36 @@ public class Http {
      * Client timeout for outgoing HTTP requests
      */
     public static final long CLIENT_TIMEOUT_DEFAULT_MS = 90000l;
+
+    /**
+     * Scheme constants
+     */
+    public static class Scheme {
+
+        /**
+         * HTTPS Scheme
+         */
+        public static final String HTTPS = "https";
+
+        /**
+         * Scheme Separator
+         */
+        public static final String SCHEME_SEPARATOR = "://";
+
+        /**
+         * Http Scheme
+         */
+        public static final String HTTP = "http";
+    }
+
+    /**
+     * Host constants
+     */
+    public static class Host {
+
+        /**
+         * Default
+         */
+        public static final String DEFAULT = "localhost";
+    }
 }

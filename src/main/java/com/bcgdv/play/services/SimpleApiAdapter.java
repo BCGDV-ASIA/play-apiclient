@@ -1,12 +1,9 @@
 package com.bcgdv.play.services;
 
-import com.bcgdv.play.Host;
 import com.bcgdv.play.Http;
 import com.bcgdv.play.Params;
-import com.bcgdv.play.Scheme;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
-import play.Configuration;
 import play.Logger;
 import play.libs.Json;
 import play.libs.ws.WS;
@@ -36,9 +33,9 @@ public class SimpleApiAdapter implements Api {
      * Default to "http"
      */
     public SimpleApiAdapter() {
-        String scheme = getEnvPropertyConfiguration(Params.API_SCHEME);
-        if(scheme==null) {
-            initScheme(Scheme.HTTP);
+        String scheme = getEnvOrProperty(Params.API_SCHEME);
+        if (scheme == null) {
+            initScheme(Http.Scheme.HTTP);
         } else {
             initScheme(scheme);
         }
@@ -47,6 +44,7 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * One of "https" or "http"
+     *
      * @param scheme the url scheme
      */
     public SimpleApiAdapter(String scheme) {
@@ -56,6 +54,7 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * initialise the API scheme
+     *
      * @param scheme the scheme
      */
     protected void initScheme(String scheme) {
@@ -65,6 +64,7 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * HTTP GET api endpoint
+     *
      * @param uri the Uri
      * @return a JsonNode or Exception
      */
@@ -75,7 +75,8 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * HTTP GET api endpoint
-     * @param uri the Uri
+     *
+     * @param uri      the Uri
      * @param headers, a Map of HTTP header value pairs
      * @return a JsonNode or Exception
      */
@@ -86,6 +87,7 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * HTTP POST api endpoint
+     *
      * @param uri the Uri
      * @return a JsonNode or Exception
      */
@@ -96,6 +98,7 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * HTTP POST api endpiont
+     *
      * @param uri the Uri
      * @return a JsonNode received from remote
      */
@@ -106,7 +109,8 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * HTTP POST api endpiont
-     * @param uri the Uri
+     *
+     * @param uri      the Uri
      * @param headers, a Map of HTTP header key/value pairs
      * @return a JsonNode received from remote
      */
@@ -117,9 +121,10 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * HTTP POST api endpiont
-     * @param uri the Uri
+     *
+     * @param uri      the Uri
      * @param headers, a Map of HTTP header key/value pairs
-     * @param body the JSON body
+     * @param body     the JSON body
      * @return a JsonNode received from remote
      */
     public JsonNode post(String uri, Map headers, JsonNode body) {
@@ -129,7 +134,8 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * HTTP PUT api endpoint
-     * @param uri the Uri
+     *
+     * @param uri  the Uri
      * @param body a JsonNode body to be posted
      * @return a JsonNode received from remote
      */
@@ -140,9 +146,10 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * HTTP POST api endpoint
-     * @param uri the Uri
+     *
+     * @param uri     the Uri
      * @param headers a Map of HTTP header value pairs
-     * @param body a JsonNode body to be posted
+     * @param body    a JsonNode body to be posted
      * @return a JsonNode received from remote
      */
     public JsonNode put(String uri, Map headers, JsonNode body) {
@@ -154,14 +161,15 @@ public class SimpleApiAdapter implements Api {
      * HTTP PUT api endpoint
      * Fire and forget pattern. Fires a put request for given uri, headers
      * and body asynchronously.
-     * @param uri the Uri
+     *
+     * @param uri     the Uri
      * @param headers a Map of HTTP header value pairs
-     * @param body a JsonNode body to be posted
+     * @param body    a JsonNode body to be posted
      */
     @Override
     public void putAndForget(String uri, Map headers, JsonNode body) {
-        Logger.info("Trying to make  put request for url {}",uri);
-         CompletableFuture.runAsync(() -> {
+        Logger.info("Trying to make  put request for url {}", uri);
+        CompletableFuture.runAsync(() -> {
             try {
                 WSResponse response = apiRequest(uri, headers).put(body).toCompletableFuture().get();
                 Logger.info("Remote put response  for uri " + uri + "is " + response.getStatus());
@@ -176,17 +184,19 @@ public class SimpleApiAdapter implements Api {
      * HTTP PUT api endpoint
      * Fire and forget pattern. Fires a put request for given uri, headers
      * and body asynchronously.
-     * @param uri the Uri
+     *
+     * @param uri  the Uri
      * @param body a JsonNode body to be posted
      */
     @Override
     public void putAndForget(String uri, JsonNode body) {
-         putAndForget(uri,new HashMap(),body);
+        putAndForget(uri, new HashMap(), body);
     }
 
 
     /**
      * Delete the Uri
+     *
      * @param uri the Uri
      * @return parent node
      */
@@ -197,7 +207,8 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * Delete the Uri
-     * @param uri the Uri
+     *
+     * @param uri     the Uri
      * @param headers a map of HTTP headers
      * @return parent node
      */
@@ -208,8 +219,9 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * Make api request to relative path inside domain
+     *
      * @param pathSegment the path to call
-     * @param headers HTTP headers to pass
+     * @param headers     HTTP headers to pass
      * @return WSRequest
      */
     protected WSRequest apiRequest(String pathSegment, Map headers) {
@@ -217,57 +229,63 @@ public class SimpleApiAdapter implements Api {
         request.setFollowRedirects(true);
         request.setRequestTimeout(getTimeout());
         request.setContentType(Http.MIME_TYPE);
-        if(headers!=null&&headers.containsKey(Http.AUTHORIZATION_HEADER)) {
+        if (headers != null && headers.containsKey(Http.AUTHORIZATION_HEADER)) {
             request.setHeader(Http.AUTHORIZATION_HEADER, (String) headers.get(Http.AUTHORIZATION_HEADER));
         }
-        if(headers!=null&&headers.containsKey(X_REQUEST_ID)) {
+        if (headers != null && headers.containsKey(X_REQUEST_ID)) {
             request.setHeader(X_REQUEST_ID, (String) headers.get(X_REQUEST_ID));
         }
         return request;
     }
 
+
     /**
      * Build a Uri from Components
+     *
      * @param pathSegment and append this relative path
      * @return as String
      */
     protected String buildUri(String pathSegment) {
         StringBuilder sb = new StringBuilder();
         sb.append(scheme);
-        sb.append(Scheme.SCHEME_SEPARATOR);
+        sb.append(Http.Scheme.SCHEME_SEPARATOR);
         sb.append(getHost());
         sb.append(getPort());
         sb.append(pathSegment);
         return sb.toString();
     }
 
+
     /**
+     * Get the port
      *
-     * @return
+     * @return as String
      */
     protected String getPort() {
-        String port = getEnvPropertyConfiguration(API_PORT);
-        if(port==null) {
-            if(Scheme.HTTPS.equals(scheme)) {
-                port=":443";
+        String port = getEnvOrProperty(API_PORT);
+        if (port == null) {
+            if (Http.Scheme.HTTPS.equals(scheme)) {
+                port = ":443";
             }
-            if(Scheme.HTTP.equals(scheme)) {
-                port=":80";
-            } else {
-                port="";
+            if (Http.Scheme.HTTP.equals(scheme)) {
+                port = ":80";
             }
+        } else {
+            port = ":" + port;
         }
-        return port;
+        return port != null ? port : "";
     }
+
 
     /**
      * Get the api Host from config
+     *
      * @return as String
      */
     protected String getHost() {
-        String host = getEnvPropertyConfiguration(API_HOST_NAME);
-        if(host==null) {
-            host= Host.DEFAULT;
+        String host = getEnvOrProperty(API_HOST_NAME);
+        if (host == null) {
+            host = Http.Host.DEFAULT;
         }
         return host;
     }
@@ -275,11 +293,12 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * Handle the JSON response
+     *
      * @param response WSResponse
      * @return a JSON node
      */
     protected JsonNode handleResponse(WSResponse response) {
-        if(response.getStatus() < Http.BAD_REQUEST) {
+        if (response.getStatus() < Http.BAD_REQUEST) {
             return Json.parse(jsonSafeResponse(response));
         } else {
             return handleRemoteError(response.getUri().getPath(), response);
@@ -289,6 +308,7 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * Parses JSON response and returns empty JSON body on failure
+     *
      * @param response WSResponse
      * @return decoded JSON body as STring
      */
@@ -299,12 +319,13 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * Check the remote response HTTP status
-     * @param uri the URI
+     *
+     * @param uri      the URI
      * @param response the WSResponse
      * @return the JSONNode
      */
     protected JsonNode handleRemoteError(String uri, WSResponse response) {
-        String message = "remote response for uri: " + uri +", status: " + response.getStatus();
+        String message = "remote response for uri: " + uri + ", status: " + response.getStatus();
         Logger.warn(message);
         throw new RuntimeJsonMappingException(message);
     }
@@ -312,11 +333,12 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * Parse HTTP getTimeout from config
+     *
      * @return long value
      */
     protected long getTimeout() {
-        String timeout = getEnvPropertyConfiguration(HTTP_CLIENT_TIMEOUT);
-        if (timeout==null) {
+        String timeout = getEnvOrProperty(HTTP_CLIENT_TIMEOUT);
+        if (timeout == null) {
             return Http.CLIENT_TIMEOUT_DEFAULT_MS;
         } else {
             return Long.parseLong(timeout);
@@ -326,19 +348,14 @@ public class SimpleApiAdapter implements Api {
 
     /**
      * Read parameter as system environment variable or Java property value
+     *
      * @param param the param
      * @return a String decoded value
      */
-    protected String getEnvPropertyConfiguration(String param) {
+    protected String getEnvOrProperty(String param) {
         String value = System.getenv(param);
-        if(value==null) {
+        if (value == null) {
             value = System.getProperty(param);
-        }
-        if(value==null) {
-            value = Configuration.root().getString(param);
-        }
-        if(value==null) {
-            value = Configuration.root().getString(param.toLowerCase());
         }
         return value;
     }
