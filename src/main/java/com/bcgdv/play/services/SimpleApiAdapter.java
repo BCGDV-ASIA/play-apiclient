@@ -1,6 +1,7 @@
 package com.bcgdv.play.services;
 
 import com.bcgdv.play.Host;
+import com.bcgdv.play.Http;
 import com.bcgdv.play.Params;
 import com.bcgdv.play.Scheme;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,15 +27,10 @@ import static com.bcgdv.play.Params.*;
  */
 public class SimpleApiAdapter implements Api {
 
-    protected static final int CLIENT_ERROR_400 = 400;
-
-    protected static final String HTTP_AUTHORIZATION_HEADER = "Authorization";
-    protected static final String APPLICATION_JSON = "application/json";
-
-    protected static final long HTTP_CLIENT_TIMEOUT_DEFAULT_MS = 90000l;
-
+    /**
+     * Has a Scheme
+     */
     protected static String scheme;
-
 
     /**
      * Default to "http"
@@ -220,9 +216,9 @@ public class SimpleApiAdapter implements Api {
         WSRequest request = WS.url(buildUri(pathSegment));
         request.setFollowRedirects(true);
         request.setRequestTimeout(getTimeout());
-        request.setContentType(APPLICATION_JSON);
-        if(headers!=null&&headers.containsKey(HTTP_AUTHORIZATION_HEADER)) {
-            request.setHeader(HTTP_AUTHORIZATION_HEADER, (String) headers.get(HTTP_AUTHORIZATION_HEADER));
+        request.setContentType(Http.MIME_TYPE);
+        if(headers!=null&&headers.containsKey(Http.AUTHORIZATION_HEADER)) {
+            request.setHeader(Http.AUTHORIZATION_HEADER, (String) headers.get(Http.AUTHORIZATION_HEADER));
         }
         if(headers!=null&&headers.containsKey(X_REQUEST_ID)) {
             request.setHeader(X_REQUEST_ID, (String) headers.get(X_REQUEST_ID));
@@ -283,7 +279,7 @@ public class SimpleApiAdapter implements Api {
      * @return a JSON node
      */
     protected JsonNode handleResponse(WSResponse response) {
-        if(response.getStatus() < CLIENT_ERROR_400) {
+        if(response.getStatus() < Http.BAD_REQUEST) {
             return Json.parse(jsonSafeResponse(response));
         } else {
             return handleRemoteError(response.getUri().getPath(), response);
@@ -321,7 +317,7 @@ public class SimpleApiAdapter implements Api {
     protected long getTimeout() {
         String timeout = getEnvPropertyConfiguration(HTTP_CLIENT_TIMEOUT);
         if (timeout==null) {
-            return HTTP_CLIENT_TIMEOUT_DEFAULT_MS;
+            return Http.CLIENT_TIMEOUT_DEFAULT_MS;
         } else {
             return Long.parseLong(timeout);
         }
