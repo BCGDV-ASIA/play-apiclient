@@ -1,5 +1,6 @@
 package com.bcgdv.play.services;
 
+import com.bcgdv.play.Host;
 import com.bcgdv.play.Params;
 import com.bcgdv.play.Scheme;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,11 +17,11 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static com.bcgdv.RequestIdGenerator.X_REQUEST_ID;
-import static com.bcgdv.play.Params.API_HOST_NAME;
+import static com.bcgdv.play.Params.*;
 
 /**
  * Simple API Adapter connects to internal APIs using the environment variable $API_HOST_NAME,
- * sets a timeout, and sets up the client to support HTTP redirects, i.e. from HTTP
+ * sets a getTimeout, and sets up the client to support HTTP redirects, i.e. from HTTP
  * to HTTPS URLs.
  */
 public class SimpleApiAdapter implements Api {
@@ -29,10 +30,11 @@ public class SimpleApiAdapter implements Api {
 
     protected static final String HTTP_AUTHORIZATION_HEADER = "Authorization";
     protected static final String APPLICATION_JSON = "application/json";
-    protected static final String HTTP_CLIENT_TIMEOUT = "HTTP_CLIENT_TIMEOUT";
+
     protected static final long HTTP_CLIENT_TIMEOUT_DEFAULT_MS = 90000l;
 
-    protected static String scheme = "http://";
+    protected static String scheme;
+
 
     /**
      * Default to "http"
@@ -52,7 +54,7 @@ public class SimpleApiAdapter implements Api {
      * @param scheme the url scheme
      */
     public SimpleApiAdapter(String scheme) {
-        initScheme(scheme);
+        SimpleApiAdapter.scheme = scheme;
     }
 
 
@@ -61,13 +63,7 @@ public class SimpleApiAdapter implements Api {
      * @param scheme the scheme
      */
     protected void initScheme(String scheme) {
-        if(Scheme.HTTPS.equalsIgnoreCase(scheme) || Scheme.SSL.equalsIgnoreCase(scheme)) {
-            SimpleApiAdapter.scheme = Scheme.HTTPS + Scheme.SCHEME_SEPARATOR;
-        } else if(Scheme.HTTP.equalsIgnoreCase(scheme)) {
-            SimpleApiAdapter.scheme = Scheme.HTTP + Scheme.SCHEME_SEPARATOR;
-        } else {
-            throw new IllegalArgumentException("unable to recognise scheme");
-        }
+        SimpleApiAdapter.scheme = scheme;
     }
 
 
@@ -221,10 +217,9 @@ public class SimpleApiAdapter implements Api {
      * @return WSRequest
      */
     protected WSRequest apiRequest(String pathSegment, Map headers) {
-        String host = getEnvPropertyConfiguration(API_HOST_NAME);
-        WSRequest request = WS.url(scheme+host+pathSegment);
+        WSRequest request = WS.url(buildUri(pathSegment));
         request.setFollowRedirects(true);
-        request.setRequestTimeout(timeout());
+        request.setRequestTimeout(getTimeout());
         request.setContentType(APPLICATION_JSON);
         if(headers!=null&&headers.containsKey(HTTP_AUTHORIZATION_HEADER)) {
             request.setHeader(HTTP_AUTHORIZATION_HEADER, (String) headers.get(HTTP_AUTHORIZATION_HEADER));
@@ -233,6 +228,46 @@ public class SimpleApiAdapter implements Api {
             request.setHeader(X_REQUEST_ID, (String) headers.get(X_REQUEST_ID));
         }
         return request;
+    }
+
+    /**
+     * Build a Uri from Components
+     * @param pathSegment and append this relative path
+     * @return as String
+     */
+    protected String buildUri(String pathSegment) {
+        return scheme+getHost()+getPort()+pathSegment;
+    }
+
+    /**
+     *
+     * @return
+     */
+    protected String getPort() {
+        String port = getEnvPropertyConfiguration(API_PORT);
+        if(port==null) {
+            if(Scheme.HTTPS.equals(scheme)) {
+                port=":443";
+            }
+            if(Scheme.HTTP.equals(scheme)) {
+                port=":80";
+            } else {
+                port="";
+            }
+        }
+        return port;
+    }
+
+    /**
+     * Get the api Host from config
+     * @return as String
+     */
+    protected String getHost() {
+        String host = getEnvPropertyConfiguration(API_HOST_NAME);
+        if(host==null) {
+            host= Host.DEFAULT;
+        }
+        return host;
     }
 
 
@@ -274,10 +309,10 @@ public class SimpleApiAdapter implements Api {
 
 
     /**
-     * Parse HTTP timeout from config
+     * Parse HTTP getTimeout from config
      * @return long value
      */
-    protected long timeout() {
+    protected long getTimeout() {
         String timeout = getEnvPropertyConfiguration(HTTP_CLIENT_TIMEOUT);
         if (timeout==null) {
             return HTTP_CLIENT_TIMEOUT_DEFAULT_MS;
