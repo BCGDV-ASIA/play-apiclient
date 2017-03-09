@@ -14,21 +14,45 @@ public class ApiFacade implements Api {
     protected Api api;
 
     public ApiFacade() {
-        this.api = new TimingWrapperInterceptor(new SimpleApiAdapter("ssl"));
+        this.api = new TimingWrapperInterceptor(new SimpleApiAdapter());
     }
 
+
+    /**
+     * HTTP GET api endpoint
+     * @param uri the Uri
+     * @return a JsonNode or Exception
+     */
     public JsonNode get(String uri) {
         return api.get(uri);
     }
 
+
+    /**
+     * HTTP GET api endpoint
+     * @param uri the Uri
+     * @param headers, a Map of HTTP header value pairs
+     * @return a JsonNode or Exception
+     */
     public JsonNode get(String uri, Map headers) {
         return api.get(uri, headers);
     }
 
+    /**
+     * Delete the Uri
+     * @param uri the Uri
+     * @return parent node
+     */
     public JsonNode delete(String uri) {
         return api.delete(uri);
     }
 
+    /**
+     * Delete the Uri
+     * @param uri the Uri
+     * @param headers a map of http headers
+     * @return parent node
+     */
     public JsonNode delete(String uri, Map headers) {
         return api.delete(uri, headers);
     }

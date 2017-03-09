@@ -31,7 +31,7 @@ public interface Api {
 
 
     /**
-     * HTTP POST api endpiont
+     * HTTP POST api endpoint
      * @param uri the Uri
      * @return a JsonNode or Exception
      */
@@ -107,8 +107,7 @@ public interface Api {
 
 
     /**
-     * Fire and forget pattern. Fires a put request for given uri, headers
-     * and body asynchronously.
+     * Delete the Uri
      * @param uri the Uri
      * @return parent node
      */
@@ -116,8 +115,7 @@ public interface Api {
 
 
     /**
-     * Fire and forget pattern. Fires a put request for given uri, headers
-     * and body asynchronously.
+     * Delete the URi
      * @param uri the Uri
      * @param headers a Map of HTTP header value pairs
      * @return parent node

@@ -1,5 +1,6 @@
 package com.bcgdv.play.services;
 
+import com.bcgdv.play.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import play.Configuration;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static com.bcgdv.RequestIdGenerator.X_REQUEST_ID;
+import static com.bcgdv.play.Constants.API_HOST_NAME;
 
 /**
  * Simple API Adapter connects to internal APIs using the environment variable $API_HOST_NAME,
@@ -21,7 +23,6 @@ import static com.bcgdv.RequestIdGenerator.X_REQUEST_ID;
  * to HTTPS URLs.
  */
 public class SimpleApiAdapter implements Api {
-    protected static final String API_HOST_NAME = "API_HOST_NAME";
 
     protected static final int CLIENT_ERROR_400 = 400;
 
@@ -37,6 +38,19 @@ public class SimpleApiAdapter implements Api {
     protected static String scheme = "http://";
 
     /**
+     * Default to HTTP
+     */
+    public SimpleApiAdapter() {
+        String scheme = getEnvPropertyConfiguration(Constants.API_SCHEME);
+        if(scheme==null) {
+            initScheme(HTTP);
+        } else {
+            initScheme(scheme);
+        }
+    }
+
+
+    /**
      * One of "https" "ssl" or "http"
      * @param scheme the url scheme
      */
@@ -44,6 +58,11 @@ public class SimpleApiAdapter implements Api {
         initScheme(scheme);
     }
 
+
+    /**
+     * initialise the API scheme
+     * @param scheme the scheme
+     */
     protected void initScheme(String scheme) {
         if(HTTPS.equalsIgnoreCase(scheme) || SSL.equalsIgnoreCase(scheme)) {
             SimpleApiAdapter.scheme = HTTPS + SCHEME_SEPARATOR;
@@ -54,38 +73,102 @@ public class SimpleApiAdapter implements Api {
         }
     }
 
+
+    /**
+     * HTTP GET api endpoint
+     * @param uri the Uri
+     * @return a JsonNode or Exception
+     */
     public JsonNode get(String uri) {
         return handleResponse(apiRequest(uri, new HashMap()).get().toCompletableFuture().join());
     }
 
+
+    /**
+     * HTTP GET api endpoint
+     * @param uri the Uri
+     * @param headers, a Map of HTTP header value pairs
+     * @return a JsonNode or Exception
+     */
     public JsonNode get(String uri, Map headers) {
         return handleResponse(apiRequest(uri, headers).get().toCompletableFuture().join());
     }
 
+
+    /**
+     * HTTP POST api endpoint
+     * @param uri the Uri
+     * @return a JsonNode or Exception
+     */
     public JsonNode post(String uri, JsonNode body) {
         return handleResponse(apiRequest(uri, new HashMap()).post(body).toCompletableFuture().join());
     }
 
+
+    /**
+     * HTTP POST api endpiont
+     * @param uri the Uri
+     * @return a JsonNode received from remote
+     */
     public JsonNode post(String uri) {
         return handleResponse(apiRequest(uri, new HashMap()).post(Json.newObject()).toCompletableFuture().join());
     }
 
+
+    /**
+     * HTTP POST api endpiont
+     * @param uri the Uri
+     * @param headers, a Map of HTTP header key/value pairs
+     * @return a JsonNode received from remote
+     */
     public JsonNode post(String uri, Map headers) {
         return handleResponse(apiRequest(uri, headers).post(Json.newObject()).toCompletableFuture().join());
     }
-    
+
+
+    /**
+     * HTTP POST api endpiont
+     * @param uri the Uri
+     * @param headers, a Map of HTTP header key/value pairs
+     * @param body the JSON body
+     * @return a JsonNode received from remote
+     */
     public JsonNode post(String uri, Map headers, JsonNode body) {
         return handleResponse(apiRequest(uri, headers).post(body).toCompletableFuture().join());
     }
 
+
+    /**
+     * HTTP PUT api endpoint
+     * @param uri the Uri
+     * @param body a JsonNode body to be posted
+     * @return a JsonNode received from remote
+     */
     public JsonNode put(String uri, JsonNode body) {
         return handleResponse(apiRequest(uri, new HashMap()).put(body).toCompletableFuture().join());
     }
 
+
+    /**
+     * HTTP POST api endpoint
+     * @param uri the Uri
+     * @param headers a Map of HTTP header value pairs
+     * @param body a JsonNode body to be posted
+     * @return a JsonNode received from remote
+     */
     public JsonNode put(String uri, Map headers, JsonNode body) {
         return handleResponse(apiRequest(uri, headers).put(body).toCompletableFuture().join());
     }
 
+
+    /**
+     * HTTP PUT api endpoint
+     * Fire and forget pattern. Fires a put request for given uri, headers
+     * and body asynchronously.
+     * @param uri the Uri
+     * @param headers a Map of HTTP header value pairs
+     * @param body a JsonNode body to be posted
+     */
     @Override
     public void putAndForget(String uri, Map headers, JsonNode body) {
         Logger.info("Trying to make  put request for url {}",uri);
@@ -99,18 +182,40 @@ public class SimpleApiAdapter implements Api {
         });
     }
 
+
+    /**
+     * HTTP PUT api endpoint
+     * Fire and forget pattern. Fires a put request for given uri, headers
+     * and body asynchronously.
+     * @param uri the Uri
+     * @param body a JsonNode body to be posted
+     */
     @Override
     public void putAndForget(String uri, JsonNode body) {
          putAndForget(uri,new HashMap(),body);
     }
 
+
+    /**
+     * Delete the Uri
+     * @param uri the Uri
+     * @return parent node
+     */
     public JsonNode delete(String uri) {
         return handleResponse(apiRequest(uri, new HashMap()).delete().toCompletableFuture().join());
     }
 
+
+    /**
+     * Delete the Uri
+     * @param uri the Uri
+     * @param headers a map of HTTP headers
+     * @return parent node
+     */
     public JsonNode delete(String uri, Map headers) {
         return handleResponse(apiRequest(uri, headers).delete().toCompletableFuture().join());
     }
+
 
     /**
      * Make api request to relative path inside domain
@@ -133,6 +238,7 @@ public class SimpleApiAdapter implements Api {
         return request;
     }
 
+
     /**
      * Handle the JSON response
      * @param response WSResponse
@@ -146,6 +252,7 @@ public class SimpleApiAdapter implements Api {
         }
     }
 
+
     /**
      * Parses JSON response and returns empty JSON body on failure
      * @param response WSResponse
@@ -154,6 +261,7 @@ public class SimpleApiAdapter implements Api {
     protected String jsonSafeResponse(WSResponse response) {
         return "".equals(response.getBody()) ? "{}" : response.getBody();
     }
+
 
     /**
      * Check the remote response HTTP status
@@ -166,6 +274,7 @@ public class SimpleApiAdapter implements Api {
         Logger.warn(message);
         throw new RuntimeJsonMappingException(message);
     }
+
 
     /**
      * Parse HTTP timeout from config
@@ -180,8 +289,9 @@ public class SimpleApiAdapter implements Api {
         }
     }
 
+
     /**
-     * read parameter as system environment variable or Java property value
+     * Read parameter as system environment variable or Java property value
      * @param param the param
      * @return a String decoded value
      */
