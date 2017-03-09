@@ -236,7 +236,13 @@ public class SimpleApiAdapter implements Api {
      * @return as String
      */
     protected String buildUri(String pathSegment) {
-        return scheme+getHost()+getPort()+pathSegment;
+        StringBuilder sb = new StringBuilder();
+        sb.append(scheme);
+        sb.append(Scheme.SCHEME_SEPARATOR);
+        sb.append(getHost());
+        sb.append(getPort());
+        sb.append(pathSegment);
+        return sb.toString();
     }
 
     /**
